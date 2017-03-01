@@ -11,25 +11,23 @@ import org.jsoup.nodes.Document;
 public class HCMCTemp {
     public static void main(String[] args) throws IOException {
         while (true) {
-            String topic = "Time";
+            String topic = "Tester"; // cho hcm
             String content = "Cho ";
             int qos = 1;
             String broker = "tcp://m10.cloudmqtt.com:10203";
-
             //MQTT client id to use for the device. "" will generate a client id automatically
             String clientId = "12";
             MemoryPersistence persistence = new MemoryPersistence();
             try {
                 MqttClient mqttClient = new MqttClient(broker, clientId, persistence);
                 mqttClient.setCallback(new MqttCallback() {
-                    public void messageArrived(String topic, MqttMessage msg)
+                    public void messageArrived(String topic, MqttMessage msg1)
                             throws Exception {
-                        System.out.println("Recived:" + topic);
-                        System.out.println("Recived:" + new String(msg.getPayload()));
+                        System.out.println("Recived server hcm:" + topic);
+                        System.out.println("Recived:" + new String(msg1.getPayload()));
                     }
-
                     public void deliveryComplete(IMqttDeliveryToken arg0) {
-                        System.out.println("Delivary complete");
+                        System.out.println("Delivary complete for server hcm.");
                     }
 
                     public void connectionLost(Throwable arg0) {
@@ -44,7 +42,7 @@ public class HCMCTemp {
                 String url = "http://www.accuweather.com/vi/vn/ho-chi-minh-city/353981/current-weather/353981";
                 Document document = Jsoup.connect(url).get();
                 String answerers = document.select("[href*=/ho-chi-minh-city/353981/] .temp").text();
-                MqttMessage message = new MqttMessage(answerers.getBytes());
+                MqttMessage message= new MqttMessage(answerers.getBytes());
                 message.setQos(qos);
                 System.out.println("Publish message: " + message);
                 mqttClient.subscribe(topic, qos);
@@ -58,7 +56,6 @@ public class HCMCTemp {
                 System.out.println("cause " + me.getCause());
                 System.out.println("excep " + me);
                 me.printStackTrace();
-
             }
         }
     }
